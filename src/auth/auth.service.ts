@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { SignUpDto } from './dto';
 import { Tokens } from './types';
 import * as bcrypt from 'bcrypt';
+import { SignInDto } from './dto/auth.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -50,7 +51,7 @@ export class AuthService {
     };
   }
 
-  async SignUp(dto: SignUpDto): Promise<Tokens> {
+  async signUp(dto: SignUpDto): Promise<Tokens> {
     try {
       const findUser = await this.prisma.user.findUnique({
         where: {
@@ -78,5 +79,21 @@ export class AuthService {
     } catch (e: any) {
       throw new ForbiddenException(e.message);
     }
+  }
+
+  async signIn(dto: SignInDto): Promise<Tokens> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: dto.email,
+      },
+    });
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+    const passwordMatch = await bcrypt.compare(dto.password, user.password);
+    if (!passwordMatch) throw new ForbiddenException('Invalid password');
+    const tokens = await this.signToken(user.id, user.email);
+    await this.updateRtHash(user.id, tokens.refresh_token);
+    return tokens;
   }
 }
