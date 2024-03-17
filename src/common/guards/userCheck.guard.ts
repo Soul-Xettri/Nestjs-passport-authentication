@@ -24,7 +24,7 @@ export class UserCheckGuard implements CanActivate {
     const response = context.switchToHttp().getResponse() as Response;
     const exists = await this.prisma.user.findUnique({
       where: {
-        email: user.phone,
+        email: user.email,
       },
     });
     if (!exists) {
