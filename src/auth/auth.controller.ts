@@ -4,11 +4,12 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GetCurrentUserId, Public } from 'src/common/decorators';
-import { SignInDto, SignUpDto } from './dto';
+import { SignInDto, SignUpDto, UpdateDto } from './dto';
 import { Tokens } from './types';
 
 @Controller('auth')
@@ -32,5 +33,10 @@ export class AuthController {
   @Get('me')
   getMe(@GetCurrentUserId() userId: string) {
     return this.authService.getMe(userId);
+  }
+
+  @Patch('update')
+  updateProfile(@Body() dto: UpdateDto, @GetCurrentUserId() userId: string) {
+    return this.authService.updateProfile(userId, dto);
   }
 }

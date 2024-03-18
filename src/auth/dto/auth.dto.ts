@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class BaseAuthDto {
   @IsNotEmpty()
@@ -20,4 +20,10 @@ export class SignUpDto extends BaseAuthDto {
   @IsNotEmpty()
   @IsString()
   confirmPassword: string;
+}
+
+export class UpdateDto {
+  @IsOptional()
+  @IsString()
+  name: string;
 }

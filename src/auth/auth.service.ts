@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { SignUpDto } from './dto';
 import { Tokens } from './types';
 import * as bcrypt from 'bcrypt';
-import { SignInDto } from './dto/auth.dto';
+import { SignInDto, UpdateDto } from './dto/auth.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -107,6 +107,22 @@ export class AuthService {
         name: true,
         email: true,
         posts: true,
+      },
+    });
+  }
+
+  async updateProfile(userId: string, dto: UpdateDto) {
+    return this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        name: dto.name,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
       },
     });
   }
