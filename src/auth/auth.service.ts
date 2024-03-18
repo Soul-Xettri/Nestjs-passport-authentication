@@ -126,4 +126,19 @@ export class AuthService {
       },
     });
   }
+
+  async signOut(userId: string) {
+    await this.prisma.user.updateMany({
+      where: {
+        id: userId,
+        hashRt: {
+          not: null,
+        },
+      },
+      data: {
+        hashRt: null,
+      },
+    });
+    return 'Logged out';
+  }
 }
