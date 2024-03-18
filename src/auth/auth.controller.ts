@@ -1,6 +1,13 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Public } from 'src/common/decorators';
+import { GetCurrentUserId, Public } from 'src/common/decorators';
 import { SignInDto, SignUpDto } from './dto';
 import { Tokens } from './types';
 
@@ -20,5 +27,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   signIn(@Body() dto: SignInDto): Promise<Tokens> {
     return this.authService.signIn(dto);
+  }
+
+  @Get('me')
+  getMe(@GetCurrentUserId() userId: string) {
+    return this.authService.getMe(userId);
   }
 }

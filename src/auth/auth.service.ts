@@ -96,4 +96,18 @@ export class AuthService {
     await this.updateRtHash(user.id, tokens.refresh_token);
     return tokens;
   }
+
+  async getMe(userId: string) {
+    return this.prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        posts: true,
+      },
+    });
+  }
 }
