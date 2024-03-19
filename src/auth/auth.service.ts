@@ -141,4 +141,23 @@ export class AuthService {
     });
     return 'Logged out';
   }
+
+  async refresh(userId: string, rt: string) {
+    console.log('userId, rt: ', userId, rt);
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    console.log('user: ', user);
+    if (!user || !user.hashRt) throw new ForbiddenException('Access denied');
+
+    const rtMatches = await bcrypt.compare(rt, user.hashRt);
+    console.log('rtMatches: ', rtMatches);
+    if (!rtMatches) throw new ForbiddenException('Access denied');
+
+    const tokens = await this.signToken(user.id, user.email);
+    await this.updateRtHash(user.id, tokens.refresh_token);
+    return tokens;
+  }
 }

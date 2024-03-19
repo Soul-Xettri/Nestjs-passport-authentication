@@ -6,11 +6,17 @@ import {
   HttpStatus,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { GetCurrentUserId, Public } from 'src/common/decorators';
+import {
+  GetCurrentUser,
+  GetCurrentUserId,
+  Public,
+} from 'src/common/decorators';
 import { SignInDto, SignUpDto, UpdateDto } from './dto';
 import { Tokens } from './types';
+import { RtGuard } from 'src/common/guards';
 
 @Controller('auth')
 export class AuthController {
@@ -44,5 +50,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   signOut(@GetCurrentUserId() userId: string) {
     return this.authService.signOut(userId);
+  }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(RtGuard)
+  refresh(
+    @GetCurrentUser('jwt-refresh') token: string,
+    @GetCurrentUserId() userId: string,
+  ) {
+    console.log('token: ', token);
+    console.log('userId: ', userId);
+    return this.authService.refresh(userId, token);
   }
 }
